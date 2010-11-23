@@ -15,7 +15,6 @@ WriteMakefile(
 		},
 	},
 	PREREQ_PM => {
-		'Web::App'      => '1.01',
 		'Project::Easy' => '0.17'
 	}
 );

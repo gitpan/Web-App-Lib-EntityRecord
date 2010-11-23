@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Web-App-Lib-EntityRecord
-version:            0.01
+version:            0.02
 abstract:           ~
 author:
     - Ivan Baktsheev <dot.and.thing@gmail.com>
@@ -12,7 +12,6 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Project::Easy:  0.17
-    Web::App:       1.01
 resources:
     bugtracker:  http://rt.cpan.org/NoAuth/Bugs.html?Dist=Web-App
     homepage:    http://perlhug.com
@@ -22,7 +21,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.54
+generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

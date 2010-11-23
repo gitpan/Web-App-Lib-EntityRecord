@@ -39,14 +39,14 @@ sub statement_from_params {
 	my $app    = shift;
 	my $params = shift;
 	
-	# allowed: filter.* => where, group_by, sort.(field|order) => sort_(field|order)
+	# allowed: filter.* => where, group.by => group_by, sort.(field|order) => sort_(field|order)
 	#          limit, offset
 	
 	my $result = {where => {}};
 	
 	foreach my $k (%$params) {
-		if ($k =~ /^group_by$/) {
-			$result->{$k} = $params->{$k}
+		if ($k =~ /^group[_\.]by$/) {
+			$result->{group_by} = $params->{$k}
 		} elsif ($k =~ /^sort\.(field|order)$/) {
 			$result->{"sort_$1"} = $params->{$k}
 		} elsif ($k =~ /^filter\.(.*)$/) {
@@ -66,6 +66,45 @@ sub records {
 	my $list = $collection->records (%$statement);
 	
 	return $list;
+}
+
+sub embed_record {
+	my $class = shift;
+	
+	my $collection = $class->entity_collection_from_params (@_);
+	my $statement  = $class->statement_from_params (@_);
+	
+	my $to  = $_[1]->{to};
+	my $by  = $_[1]->{by};
+	my $key = $_[1]->{key};
+	
+	# TODO: check for to and by emptiness
+	
+	my $to_ids = {};
+	
+	foreach my $rec_to (@$to) {
+		# TODO: also check availability of $by in $rec_to
+		push @{$to_ids->{$rec_to->$by}}, $rec_to;
+	}
+	
+	return unless scalar keys %$to_ids;
+	
+	$statement->{where}->{$collection->_pk_} = [keys %$to_ids];
+	
+	my $list = $collection->records (%$statement);
+	
+	foreach my $rec (@$list) {
+		my $pk = $rec->_pk_;
+		next unless exists $to_ids->{$rec->$pk};
+		
+		foreach my $rec_to (@{$to_ids->{$rec->$pk}}) {
+			$rec_to->{$key} = {%$rec};
+		}
+		
+	}
+	
+	return;
+	
 }
 
 sub page {
