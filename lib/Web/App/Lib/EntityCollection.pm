@@ -39,14 +39,14 @@ sub statement_from_params {
 	my $app    = shift;
 	my $params = shift;
 	
-	# allowed: filter.* => where, group.by => group_by, sort.(field|order) => sort_(field|order)
+	# allowed: filter.* => where, group_by, sort.(field|order) => sort_(field|order)
 	#          limit, offset
 	
 	my $result = {where => {}};
 	
 	foreach my $k (%$params) {
-		if ($k =~ /^group[_\.]by$/) {
-			$result->{group_by} = $params->{$k}
+		if ($k =~ /^group_by$/) {
+			$result->{$k} = $params->{$k}
 		} elsif ($k =~ /^sort\.(field|order)$/) {
 			$result->{"sort_$1"} = $params->{$k}
 		} elsif ($k =~ /^filter\.(.*)$/) {
@@ -124,6 +124,9 @@ sub page {
 	
 	$statement->{limit}  = $params->{length} || 20;
 	$statement->{offset} = ($page_num - 1) * $statement->{limit};
+
+        # Sort field
+        $statement->{sort_field} = $params->{sort_field} || '';
 	
 	# When using LIMIT, it is important to use an ORDER BY clause that
 	# constrains the result rows into a unique order. Otherwise you will
@@ -162,7 +165,9 @@ sub page {
 		items => $list,
 		total_count => $count,
 		version => 1,
-		pager => $pager
+		pager => $pager,
+		page_size => $statement->{limit},
+		page_num  => $page_num,
 	};
 }
 

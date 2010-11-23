@@ -2,7 +2,7 @@ package Web::App::Lib::EntityRecord;
 
 use Class::Easy;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub info {
 	my $class  = shift;
